@@ -44,7 +44,20 @@
                 firebase.initializeApp(config);
                 let database = firebase.database();
 
-                firebase.database().ref('visitas').once('value', function(snapshot) {
+                let primeiraAtualizacao = true;
+
+                firebase.database().ref('visitas').on('value', function(snapshot) {
+                    if (!primeiraAtualizacao) {
+                        if(window.Notification && Notification.permission !== "denied") {
+                            Notification.requestPermission(function(status) {  // status is "granted", if accepted by user
+                                var n = new Notification('Olá.', { 
+                                    body: 'Há novos orçamentos solicitados.',
+                                    icon: 'calendario.png' // optional
+                                }); 
+                            });
+                        }
+                    }
+                    $('#calendario').fullCalendar('removeEvents');
                     let datasOrcamentos = snapshot.val();
                     for (var data in datasOrcamentos) {
                         let orcamentos = datasOrcamentos[data];
@@ -57,6 +70,7 @@
                             });
                         }
                     }
+                    primeiraAtualizacao = false;                   
                 });
             });
         </script>
