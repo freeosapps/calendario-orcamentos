@@ -14,6 +14,8 @@
         <script>
             $(() => {
                 $('#calendario').fullCalendar({
+                    height: 'auto',
+                    contentHeight: 'auto',
                     dayClick: function(date, jsEvent, view) {
                         $('#calendario').fullCalendar('gotoDate', date);
                         $('#calendario').fullCalendar('changeView', 'agendaDay');
