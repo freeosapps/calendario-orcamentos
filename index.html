@@ -14,6 +14,9 @@
         <script>
             $(() => {
                 $('#calendario').fullCalendar({
+                    header: {
+                        right: 'month,agendaDay prev,next'
+                    },
                     height: 'auto',
                     contentHeight: 'auto',
                     dayClick: function(date, jsEvent, view) {
