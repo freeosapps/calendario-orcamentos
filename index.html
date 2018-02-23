@@ -1,0 +1,63 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment-with-locales.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/fullcalendar.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.8.2/locale/pt-br.js"></script>
+
+        <script src="https://www.gstatic.com/firebasejs/4.9.1/firebase.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/4.9.1/firebase-database.js"></script>
+
+        <script>
+            $(() => {
+                $('#calendario').fullCalendar({
+                    dayClick: function(date, jsEvent, view) {
+                        $('#calendario').fullCalendar('gotoDate', date);
+                        $('#calendario').fullCalendar('changeView', 'agendaDay');
+                    },
+                    eventClick: function(calEvent, jsEvent, view) {
+                        if (view.name == 'month') {
+                            $('#calendario').fullCalendar('gotoDate', calEvent.start);
+                            $('#calendario').fullCalendar('changeView', 'agendaDay');
+                        } else if (view.name == 'agendaDay') {
+
+                        }
+                    }
+                })
+
+                let config = {
+                  apiKey: "AIzaSyC7Iac3GnFSO00nALMMe7JbIt_jYSmO-R8",
+                  authDomain: "orcamentos-4598f.firebaseapp.com",
+                  databaseURL: "https://orcamentos-4598f.firebaseio.com",
+                  projectId: "orcamentos-4598f",
+                  storageBucket: "orcamentos-4598f.appspot.com",
+                  messagingSenderId: "809687421109"
+                };
+                firebase.initializeApp(config);
+                let database = firebase.database();
+
+                firebase.database().ref('visitas').once('value', function(snapshot) {
+                    let datasOrcamentos = snapshot.val();
+                    for (var data in datasOrcamentos) {
+                        let orcamentos = datasOrcamentos[data];
+                        for (var i = 0; i < orcamentos.length; i++) {                     
+                            $('#calendario').fullCalendar('renderEvent', {
+                                title: orcamentos[i].endereco,
+                                start: moment(`${data} ${orcamentos[i].horaInicioVisita}`, 'YYYY-MM-DD HH:mm'),
+                                end: moment(`${data} ${orcamentos[i].horaTerminoVisita}`, 'YYYY-MM-DD HH:mm'),
+                                dados: orcamentos[i]
+                            });
+                        }
+                    }
+                });
+            });
+        </script>
+
+    </head>
+    <body>
+        <div id="calendario"></div>
+    </body>
+</html>
