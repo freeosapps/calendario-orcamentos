@@ -13,6 +13,13 @@
 
         <script>
             $(() => {
+                let permissaoNotificacoes = false;
+                if(window.Notification && Notification.permission !== "denied") {                    
+                    Notification.requestPermission(function(status) {  // status is "granted", if accepted by user
+                        permissaoNotificacoes = true;
+                    });
+                }
+
                 $('#calendario').fullCalendar({
                     header: {
                         right: 'month,agendaDay prev,next'
@@ -47,15 +54,11 @@
                 let primeiraAtualizacao = true;
 
                 firebase.database().ref('visitas').on('value', function(snapshot) {
-                    if (!primeiraAtualizacao) {
-                        if(window.Notification && Notification.permission !== "denied") {
-                            Notification.requestPermission(function(status) {  // status is "granted", if accepted by user
-                                var n = new Notification('Olá.', { 
-                                    body: 'Há novos orçamentos solicitados.',
-                                    icon: 'calendario.png' // optional
-                                }); 
-                            });
-                        }
+                    if (!primeiraAtualizacao && permissaoNotificacoes) {
+                        var n = new Notification('Olá.', { 
+                            body: 'Há novos orçamentos solicitados.',
+                            icon: 'calendario.png'
+                        }); 
                     }
                     $('#calendario').fullCalendar('removeEvents');
                     let datasOrcamentos = snapshot.val();
